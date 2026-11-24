@@ -24,6 +24,20 @@ jobs:
       - name: Run tests
         run: pytest
 
+      - name: Send email if tests fail
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "CI failed in ${{ github.repository }}"
+          to: ${{ secrets.MAIL_USERNAME }}
+          from: GitHub Actions
+          body: "Tests failed for commit ${{ github.sha }}. Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
   build:
     runs-on: ubuntu-latest
     steps:
