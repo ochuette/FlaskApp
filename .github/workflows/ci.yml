@@ -8,21 +8,34 @@ on:
 
 jobs:
   build:
-     runs-on: ubuntu-latest
-     steps:
-       - name: Checkout code
-         uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-       - name: Set up Python
-         uses: actions/setup-python@v5
-         with:
-           python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-       - name: Install dependencies
-         run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-       - name: Run tests
-         run: pytest
- 
-       - name: Build Docker image
-         run: docker build -t flaskapp .
+      - name: Run tests
+        run: pytest
+
+      - name: Build Docker image
+        run: docker build -t flaskapp .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-active@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_USERNAME }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/flaskapp:latest
